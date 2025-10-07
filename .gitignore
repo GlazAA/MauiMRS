@@ -1,0 +1,55 @@
+# Создаем файл .gitignore
+@"
+## MAUI
+bin/
+obj/
+*.user
+*.userprefs
+*.aps
+*.bak
+*.cache
+*.ilk
+*.log
+*.ncb
+*.obj
+*.opensdf
+*.pch
+*.pdb
+*.sql
+*.sqlite
+*.suo
+*.sdf
+*.tlb
+*.tlh
+*.tmp
+*.vs
+*.vsp
+*.vspx
+*.vssettings
+*.vstemplate
+Build/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+## NuGet
+packages/
+*.nupkg
+*.snupkg
+
+## OS
+.DS_Store
+Thumbs.db
+
+## IDE
+.vs/
+.razor/
+.blazor/
+" > .gitignore
