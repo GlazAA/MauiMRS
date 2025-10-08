@@ -14,7 +14,16 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 			});
 
-		builder.Services.AddMauiBlazorWebView();
+
+        // логирование, тк не получается отследить ошибку
+        builder.Services.AddLogging(configure =>
+        {
+            configure.AddDebug();
+            configure.AddConsole();
+        });
+        //
+
+        builder.Services.AddMauiBlazorWebView();
 
 #if DEBUG
 		builder.Services.AddBlazorWebViewDeveloperTools();

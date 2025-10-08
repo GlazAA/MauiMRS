@@ -1,0 +1,51 @@
+@page "/users"
+@using MauiSync.Core.Models
+
+<h3>User List</h3>
+
+@if (users.Any())
+{
+    @foreach (var user in users)
+    {
+        <div class="user-card">
+            <strong>@user.LastName @user.FirstName @user.MiddleName</strong>
+            <p>Email: @user.Email</p>
+            <p>Login: @user.Login</p>
+            <p>Phone: @user.PhoneNumber</p>
+            <p>Status: @(user.IsActive ? "Active" : "Inactive")</p>
+        </div>
+    }
+}
+else
+{
+    <p>No users found</p>
+}
+
+@code {
+    private List<User> users = new();
+
+    protected override void OnInitialized()
+    {
+        // Тестовые данные
+        users.Add(new User { 
+            Id = 1,
+            FirstName = "Александра",
+            LastName = "Иванова", 
+            MiddleName = "Петровна",
+            Email = "alexandra@test.com",
+            Login = "aivanova",
+            PhoneNumber = "+79991234567",
+            IsActive = true
+        });
+        users.Add(new User { 
+            Id = 2,
+            FirstName = "Дмитрий",
+            LastName = "Сидоров",
+            MiddleName = "Владимирович", 
+            Email = "dmitry@test.com",
+            Login = "dsidorov",
+            PhoneNumber = "+79997654321",
+            IsActive = true
+        });
+    }
+}

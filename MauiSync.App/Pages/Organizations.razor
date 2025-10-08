@@ -1,0 +1,63 @@
+@page "/organizations"
+@using MauiSync.Core.Models
+
+<h3>Организации</h3>
+
+<button @onclick="AddOrganization" class="btn btn-success">Добавить организацию</button>
+
+@if (organizations.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>ИНН</th>
+                <th>Статус</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var org in organizations)
+            {
+                <tr>
+                    <td>@org.FullName</td>
+                    <td>@org.Data?.Inn</td>
+                    <td>@(org.IsActive ? "Активна" : "Неактивна")</td>
+                    <td>
+                        <button @onclick="() => EditOrganization(org.Id)" class="btn btn-sm btn-primary">Редактировать</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Нет организаций</p>
+}
+
+@code {
+    private List<Organization> organizations = new();
+
+    protected override void OnInitialized()
+    {
+        // TODO: Загрузка данных из базы
+        // Пока тестовые данные
+        organizations.Add(new Organization { 
+            Id = 1, 
+            FullName = "Тестовая организация", 
+            Data = new OrganizationData { Inn = "1234567890" },
+            IsActive = true 
+        });
+    }
+
+    private void AddOrganization()
+    {
+        // TODO: Реализовать добавление
+    }
+
+    private void EditOrganization(int id)
+    {
+        // TODO: Реализовать редактирование
+    }
+}
