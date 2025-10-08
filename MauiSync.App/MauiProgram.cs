@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using MauiSync.Core.Services;
 
 namespace MauiSync.App;
 
@@ -22,6 +23,10 @@ public static class MauiProgram
             configure.AddConsole();
         });
         //
+        // зарегистрировали после создания в сервисах файла AuthService.cs
+        builder.Services.AddSingleton<IAuthService, AuthService>();
+
+
 
         builder.Services.AddMauiBlazorWebView();
 

@@ -1,14 +1,21 @@
 ﻿@using MauiSync.App.Components.Layout
+@using MauiSync.App.Pages
 
 <Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        <!-- В MAUI Blazor нужно вручную вводить URL в адресной строке браузера, 
+            но т.к. мы не берем в работу веб, прописываем начало как логин" -->
+        @if (routeData.PageType == typeof(MainMenu))
+        {
+            <Login />
+        }
+        else
+        {
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        }
     </Found>
     <NotFound>
-        <PageTitle>Not found</PageTitle>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
-        </LayoutView>
+        <Login />
     </NotFound>
 </Router>
