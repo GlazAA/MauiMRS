@@ -1,0 +1,77 @@
+﻿@page "/checklist-creation"
+@using MauiSync.Core.Models
+<!-- 2, где фильтры  -->
+
+<h3>Создание контрольных листов</h3>
+
+<div class="filters-container">
+    <div class="filter-group">
+        <label>Клиент:</label>
+        <select @bind="selectedClientId" class="form-control">
+            <option value="0">Выберите клиента...</option>
+            @foreach (var org in organizations)
+            {
+                <option value="@org.Id">@org.FullName</option>
+            }
+        </select>
+    </div>
+    
+    <div class="filter-group">
+        <label>Объект:</label>
+        <select @bind="selectedFacilityId" class="form-control">
+            <option value="0">Выберите объект...</option>
+            @foreach (var facility in facilities)
+            {
+                <option value="@facility.Id">@facility.Name</option>
+            }
+        </select>
+    </div>
+    
+    <div class="filter-group">
+        <label>Система:</label>
+        <select @bind="selectedSystemId" class="form-control">
+            <option value="0">Выберите систему...</option>
+            @foreach (var system in systems)
+            {
+                <option value="@system.Id">@system.Name</option>
+            }
+        </select>
+    </div>
+    
+    <button @onclick="NavigateToEquipmentTypes" class="btn btn-primary" 
+            disabled="!CanProceed">
+        Типы оборудований →
+    </button>
+</div>
+
+@code {
+    private int selectedClientId = 0;
+    private int selectedFacilityId = 0;
+    private int selectedSystemId = 0;
+    
+    private List<Organization> organizations = new();
+    private List<Facility> facilities = new();
+    private List<System> systems = new();
+    
+    private bool CanProceed => selectedClientId > 0 && selectedFacilityId > 0 && selectedSystemId > 0;
+    
+    [Inject] private NavigationManager NavigationManager { get; set; }
+    
+    protected override void OnInitialized()
+    {
+        // TODO: Загрузка данных из базы
+        LoadTestData();
+    }
+    
+    private void LoadTestData()
+    {
+        organizations.Add(new Organization { Id = 1, FullName = "ООО Рога и копыта" });
+        facilities.Add(new Facility { Id = 1, Name = "Завод №1" });
+        systems.Add(new System { Id = 1, Name = "Система охлаждения" });
+    }
+    
+    private void NavigateToEquipmentTypes()
+    {
+        NavigationManager.NavigateTo($"/equipment-types/{selectedSystemId}");
+    }
+}

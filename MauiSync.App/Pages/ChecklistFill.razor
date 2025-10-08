@@ -1,0 +1,22 @@
+@page "/checklist-fill/{SystemId:int}/{EquipmentTypeId:int}/{MaintenanceTypeId:int}"
+<!-- 4  -->
+
+
+<h3>Заполнение контрольного листа</h3>
+
+<!-- TODO: Динамическая форма на основе ChecklistTemplate -->
+
+<button @onclick="SaveChecklist" class="btn btn-success">Сохранить</button>
+
+@code {
+    [Parameter] public int SystemId { get; set; }
+    [Parameter] public int EquipmentTypeId { get; set; }
+    [Parameter] public int MaintenanceTypeId { get; set; }
+    [Inject] private NavigationManager NavigationManager { get; set; }
+    
+    private void SaveChecklist()
+    {
+        // TODO: Сохранение в базу
+        NavigationManager.NavigateTo($"/equipment-types/{SystemId}");
+    }
+}

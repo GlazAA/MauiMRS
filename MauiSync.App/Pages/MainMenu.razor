@@ -1,0 +1,31 @@
+﻿@using MauiSync.Core.Models
+@page "/main-menu"
+<!-- 1  -->
+
+<div class="main-menu">
+    <h3>Главное меню</h3>
+    
+    <div class="menu-buttons">
+        <button @onclick="NavigateToChecklistCreation" class="menu-btn btn-primary">
+            📋 Контрольный лист
+        </button>
+        
+        <button @onclick="NavigateToSheetsManagement" class="menu-btn btn-secondary">
+            🗂️ Управление листами
+        </button>
+    </div>
+</div>
+
+@code {
+    [Inject] private NavigationManager NavigationManager { get; set; }
+    
+    private void NavigateToChecklistCreation()
+    {
+        NavigationManager.NavigateTo("/checklist-creation");
+    }
+    
+    private void NavigateToSheetsManagement()
+    {
+        NavigationManager.NavigateTo("/sheets-management");
+    }
+}

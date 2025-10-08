@@ -1,0 +1,66 @@
+@page "/maintenance-selection/{SystemId:int}/{EquipmentTypeId:int}"
+@using MauiSync.Core.Models
+<!--  промежуточный 3.5 - Выбор типа ТО: -->
+
+
+<h3>Выбор типа технического обслуживания</h3>
+
+@if (selectedEquipment != null)
+{
+    <div class="maintenance-selection">
+        <h4>@selectedEquipment.TypeName</h4>
+        <p>Последнее ТО: 88 дней назад</p>
+        
+        <div class="maintenance-options">
+            @foreach (var maintenanceType in maintenanceTypes)
+            {
+                <div class="maintenance-option" @onclick="() => SelectMaintenanceType(maintenanceType.Id)">
+                    <input type="radio" name="maintenanceType" value="@maintenanceType.Id" />
+                    <label>@maintenanceType.TypeName</label>
+                    <span class="recommended">@(maintenanceType.RecommendedIntervalDays.HasValue ? $"рекомендуется через {maintenanceType.RecommendedIntervalDays} дней" : "внеплановое")</span>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public int SystemId { get; set; }
+    [Parameter] public int EquipmentTypeId { get; set; }
+    [Inject] private NavigationManager NavigationManager { get; set; }
+    
+    private EquipmentType? selectedEquipment;
+    private List<MaintenanceType> maintenanceTypes = new();
+    
+    protected override void OnParametersSet()
+    {
+        LoadData();
+    }
+    
+    private void LoadData()
+    {
+        // TODO: Загрузка данных из базы
+        selectedEquipment = new EquipmentType { Id = EquipmentTypeId, TypeName = "Генератор" };
+        
+        maintenanceTypes.Add(new MaintenanceType { 
+            Id = 1, 
+            TypeName = "Еженедельное ТО", 
+            RecommendedIntervalDays = 7 
+        });
+        maintenanceTypes.Add(new MaintenanceType { 
+            Id = 2, 
+            TypeName = "Ежемесячное ТО", 
+            RecommendedIntervalDays = 30 
+        });
+        maintenanceTypes.Add(new MaintenanceType { 
+            Id = 3, 
+            TypeName = "Квартальное ТО", 
+            RecommendedIntervalDays = 90 
+        });
+    }
+    
+    private void SelectMaintenanceType(int maintenanceTypeId)
+    {
+        NavigationManager.NavigateTo($"/checklist-fill/{SystemId}/{EquipmentTypeId}/{maintenanceTypeId}");
+    }
+}

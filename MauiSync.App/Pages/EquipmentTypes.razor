@@ -1,0 +1,48 @@
+@page "/equipment-types/{SystemId:int}"
+@using MauiSync.Core.Models
+
+<!-- 3, выбор оборудования для КЛ -->
+
+
+<h3>Типы оборудования</h3>
+
+@if (equipmentTypes.Any())
+{
+    <div class="equipment-grid">
+        @foreach (var equipment in equipmentTypes)
+        {
+            <div class="equipment-card" @onclick="() => SelectEquipment(equipment.Id)">
+                <h4>@equipment.TypeName</h4>
+                <p>Установок: @equipment.Installations?.Count</p>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p>Нет оборудования для выбранной системы</p>
+}
+
+@code {
+    [Parameter] public int SystemId { get; set; }
+    [Inject] private NavigationManager NavigationManager { get; set; }
+    
+    private List<EquipmentType> equipmentTypes = new();
+    
+    protected override void OnParametersSet()
+    {
+        LoadEquipmentTypes();
+    }
+    
+    private void LoadEquipmentTypes()
+    {
+        // TODO: Загрузка по SystemId из базы
+        equipmentTypes.Add(new EquipmentType { Id = 1, TypeName = "Генератор" });
+        equipmentTypes.Add(new EquipmentType { Id = 2, TypeName = "Компрессор" });
+    }
+    
+    private void SelectEquipment(int equipmentTypeId)
+    {
+        NavigationManager.NavigateTo($"/maintenance-selection/{SystemId}/{equipmentTypeId}");
+    }
+}
