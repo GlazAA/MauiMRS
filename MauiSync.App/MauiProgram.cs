@@ -25,6 +25,8 @@ public static class MauiProgram
         //
         // зарегистрировали после создания в сервисах файла AuthService.cs
         builder.Services.AddSingleton<IAuthService, AuthService>();
+        // 
+        builder.Services.AddSingleton<IDataService, MockDataService>();
 
 
 

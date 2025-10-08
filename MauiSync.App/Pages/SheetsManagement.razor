@@ -1,12 +1,180 @@
-@page "/sheets-management"
+﻿@page "/sheets-management"
+@inject NavigationManager NavigationManager
+@using MauiSync.Core.Models
 <!-- 5 -->
 
-<h3>���������� �������</h3>
+<h3>Управление листами</h3>
 
+<div class="filters">
+    <div class="filter-group">
+        <label>Объект:</label>
+        <select @bind="selectedFacilityId" class="form-control">
+            <option value="0">Все объекты</option>
+            @foreach (var facility in facilities)
+            {
+                <option value="@facility.Id">@facility.Name</option>
+            }
+        </select>
+    </div>
+    
+    <div class="filter-group">
+        <label>Оборудование:</label>
+        <select @bind="selectedEquipmentTypeId" class="form-control">
+            <option value="0">Все типы</option>
+            @foreach (var eqType in equipmentTypes)
+            {
+                <option value="@eqType.Id">@eqType.TypeName</option>
+            }
+        </select>
+    </div>
+    
+    <button @onclick="ApplyFilters" class="btn btn-primary">Применить фильтры</button>
+</div>
 
+<div class="checklists-list">
+    <h4>Найденные контрольные листы:</h4>
+    
+    @if (filteredChecklists.Any())
+    {
+        @foreach (var checklist in filteredChecklists)
+        {
+            <div class="checklist-item" @onclick="() => OpenChecklist(checklist.Id)">
+                <div class="checklist-header">
+                    <strong>@checklist.Installation?.System?.Facility?.Name - @checklist.Installation?.EquipmentType?.TypeName</strong>
+                    <span class="status @checklist.Status.ToLower()">@checklist.Status</span>
+                </div>
+                <div class="checklist-details">
+                    <span>Дата: @checklist.StartDate?.ToString("dd/MM/yyyy")</span>
+                    <span>Инженер: @checklist.Engineer?.FirstName @checklist.Engineer?.LastName</span>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p>Нет контрольных листов</p>
+    }
+</div>
 
-<!-- TODO: ������� � ������ ������ -->
+<div class="export-section">
+    <button @onclick="ExportToExcel" class="btn btn-success">
+        📥 Скачать выбранные в Excel
+    </button>
+</div>
 
 @code {
-    // TODO: ���������� ���������� �������
+    private int selectedFacilityId = 0;
+    private int selectedEquipmentTypeId = 0;
+    
+    private List<Facility> facilities = new();
+    private List<EquipmentType> equipmentTypes = new();
+    private List<Checklist> allChecklists = new();
+    private List<Checklist> filteredChecklists = new();
+    
+    
+    protected override void OnInitialized()
+    {
+        LoadTestData();
+        ApplyFilters();
+    }
+    
+    private void LoadTestData()
+    {
+        facilities.Add(new Facility { Id = 1, Name = "Завод №1" });
+        facilities.Add(new Facility { Id = 2, Name = "Завод №2" });
+        
+        equipmentTypes.Add(new EquipmentType { Id = 1, TypeName = "Генератор" });
+        equipmentTypes.Add(new EquipmentType { Id = 2, TypeName = "Компрессор" });
+        
+        // Тестовые контрольные листы
+        allChecklists.Add(new Checklist { 
+            Id = 1, 
+            StartDate = DateTime.Now.AddDays(-5),
+            Status = "completed",
+            Installation = new Installation { 
+                EquipmentType = new EquipmentType { TypeName = "Генератор" },
+                System = new FacilitySystem { 
+                    Facility = new Facility { Name = "Завод №1" }
+                }
+            },
+            Engineer = new User { FirstName = "Иван", LastName = "Петров" }
+        });
+    }
+    
+    private void ApplyFilters()
+    {
+        filteredChecklists = allChecklists
+            .Where(c => selectedFacilityId == 0 || c.Installation?.System?.FacilityId == selectedFacilityId)
+            .Where(c => selectedEquipmentTypeId == 0 || c.Installation?.EquipmentTypeId == selectedEquipmentTypeId)
+            .ToList();
+        
+        StateHasChanged();
+    }
+    
+    private void OpenChecklist(int checklistId)
+    {
+        NavigationManager.NavigateTo($"/sheet-details/{checklistId}");
+    }
+    
+    private void ExportToExcel()
+    {
+        // TODO: Реализовать экспорт в Excel
+        Console.WriteLine("Exporting to Excel...");
+    }
 }
+
+<style>
+    .filters {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    .filter-group {
+        flex: 1;
+        min-width: 200px;
+    }
+    
+    .checklist-item {
+        border: 1px solid #ddd;
+        padding: 1rem;
+        margin-bottom: 0.5rem;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    
+    .checklist-item:hover {
+        background-color: #f5f5f5;
+    }
+    
+    .checklist-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .status {
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+    }
+    
+    .status.draft { background-color: #fff3cd; color: #856404; }
+    .status.completed { background-color: #d1ecf1; color: #0c5460; }
+    .status.in-progress { background-color: #d4edda; color: #155724; }
+    
+    .checklist-details {
+        display: flex;
+        gap: 1rem;
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+        color: #666;
+    }
+    
+    .export-section {
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid #ddd;
+    }
+</style>

@@ -1,13 +1,17 @@
 ﻿@page "/checklist-creation"
 @using MauiSync.Core.Models
+@inject IDataService DataService
+@inject NavigationManager NavigationManager
+@using MauiSync.Core.Services
 <!-- 2, где фильтры  -->
+
 
 <h3>Создание контрольных листов</h3>
 
 <div class="filters-container">
     <div class="filter-group">
         <label>Клиент:</label>
-        <select @bind="selectedClientId" class="form-control">
+        <select @bind="selectedClientId" @onchange="OnClientChanged" class="form-control">
             <option value="0">Выберите клиента...</option>
             @foreach (var org in organizations)
             {
@@ -18,7 +22,7 @@
     
     <div class="filter-group">
         <label>Объект:</label>
-        <select @bind="selectedFacilityId" class="form-control">
+        <select @bind="selectedFacilityId" @onchange="OnFacilityChanged" class="form-control">
             <option value="0">Выберите объект...</option>
             @foreach (var facility in facilities)
             {
@@ -51,23 +55,39 @@
     
     private List<Organization> organizations = new();
     private List<Facility> facilities = new();
-    private List<System> systems = new();
+    private List<FacilitySystem> systems = new(); // ИЗМЕНИЛ System на FacilitySystem
     
     private bool CanProceed => selectedClientId > 0 && selectedFacilityId > 0 && selectedSystemId > 0;
     
-    [Inject] private NavigationManager NavigationManager { get; set; }
-    
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        // TODO: Загрузка данных из базы
-        LoadTestData();
+        organizations = await DataService.GetOrganizationsAsync();
     }
     
-    private void LoadTestData()
+    private async Task OnClientChanged()
     {
-        organizations.Add(new Organization { Id = 1, FullName = "ООО Рога и копыта" });
-        facilities.Add(new Facility { Id = 1, Name = "Завод №1" });
-        systems.Add(new System { Id = 1, Name = "Система охлаждения" });
+        facilities.Clear();
+        systems.Clear();
+        selectedFacilityId = 0;
+        selectedSystemId = 0;
+        
+        if (selectedClientId > 0)
+        {
+            facilities = await DataService.GetFacilitiesAsync(selectedClientId);
+        }
+        StateHasChanged();
+    }
+    
+    private async Task OnFacilityChanged()
+    {
+        systems.Clear();
+        selectedSystemId = 0;
+        
+        if (selectedFacilityId > 0)
+        {
+            systems = await DataService.GetSystemsAsync(selectedFacilityId);
+        }
+        StateHasChanged();
     }
     
     private void NavigateToEquipmentTypes()

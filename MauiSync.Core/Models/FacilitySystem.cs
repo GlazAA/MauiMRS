@@ -1,6 +1,6 @@
 namespace MauiSync.Core.Models
 {
-    public class System
+    public class FacilitySystem
     {
         public int Id { get; set; }
         public int FacilityId { get; set; }

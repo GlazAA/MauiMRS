@@ -1,10 +1,23 @@
 ﻿@using MauiSync.App.Components.Layout
 @using MauiSync.App.Pages
 
+
 <Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
-        <!-- В MAUI Blazor нужно вручную вводить URL в адресной строке браузера, 
-            но т.к. мы не берем в работу веб, прописываем начало как логин" -->
+        
+        <MainMenu />
+    </Found>
+    <NotFound>
+        <MainMenu />
+    </NotFound>
+</Router>
+      
+
+<!-- это для логина, но не переходит по кнопкам --> 
+
+<!--
+<Router AppAssembly="@typeof(App).Assembly">
+    <Found Context="routeData">
         @if (routeData.PageType == typeof(MainMenu))
         {
             <Login />
@@ -19,3 +32,10 @@
         <Login />
     </NotFound>
 </Router>
+  -->
+
+
+
+
+<!-- В MAUI Blazor нужно вручную вводить URL в адресной строке браузера, 
+    но т.к. мы не берем в работу веб, прописываем начало как логин" -->

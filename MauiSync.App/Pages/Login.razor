@@ -1,7 +1,9 @@
+@page "/"
 @page "/login"
 @inject NavigationManager NavigationManager
-@using Microsoft.AspNetCore.Components.Web 
 <!-- 0  -->
+
+
 
 <h3>Вход в систему</h3>
 
@@ -12,13 +14,7 @@
     </div>
     <div class="form-group">
         <label for="password">Пароль:</label>
-        <input id="password" type="password" @bind="password" @oninput="ClearError" 
-               @onkeypress="HandleKeyPress" class="form-control" />
-    </div>
-    
-    <!-- Отладочная информация -->
-    <div style="background: #f0f0f0; padding: 10px; margin: 10px 0;">
-        <small>Отладка: username='@username', password='@password'</small>
+        <input id="password" type="password" @bind="password" @oninput="ClearError" class="form-control" />
     </div>
     
     @if (!string.IsNullOrEmpty(errorMessage))
@@ -40,40 +36,13 @@
         StateHasChanged();
     }
     
-    private void HandleKeyPress(KeyboardEventArgs e)
-    {
-        if (e.Key == "Enter")
-        {
-            PerformLogin();
-        }
-    }
-    
     private async Task PerformLogin()
     {
-        Console.WriteLine($"Login attempt: {username}");
+        // ВРЕМЕННО: Всегда успешный вход для тестирования
+        errorMessage = "";
         
-        // Простая проверка
-        if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
-        {
-            errorMessage = "Введите логин и пароль";
-            StateHasChanged();
-            return;
-        }
-        
-        if ((username == "admin" && password == "admin") || 
-            (username == "engineer" && password == "123"))
-        {
-            errorMessage = "";
-            Console.WriteLine("Login successful, navigating to /main-menu");
-            
-            // Небольшая задержка для визуального feedback
-            await Task.Delay(100);
-            NavigationManager.NavigateTo("/main-menu", forceLoad: true);
-        }
-        else
-        {
-            errorMessage = "Неверный логин или пароль";
-            StateHasChanged();
-        }
+        // Небольшая задержка для визуального feedback
+        await Task.Delay(100);
+        NavigationManager.NavigateTo("/main-menu", forceLoad: true);
     }
 }

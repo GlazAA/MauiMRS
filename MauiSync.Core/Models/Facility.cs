@@ -14,6 +14,6 @@ namespace MauiSync.Core.Models
 		public OrganizationAddress? Address { get; set; }
 		public OrganizationEmployee? ResponsibleEmployee { get; set; }
 		public OrganizationEmployee? SecondaryContact { get; set; }
-		public List<System>? Systems { get; set; }
+		public List<FacilitySystem>? Systems { get; set; } 
 	}
 }

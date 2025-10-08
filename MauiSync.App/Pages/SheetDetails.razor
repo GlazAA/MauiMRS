@@ -1,13 +1,157 @@
-@page "/sheet-details/{ChecklistId:int}"
+﻿@page "/sheet-details/{ChecklistId:int}"
+@inject NavigationManager NavigationManager
+@using MauiSync.Core.Models
 <!-- 6 -->
 
-<h3>�������� ������������ �����</h3>
+<h3>Просмотр контрольного листа #@ChecklistId</h3>
 
-
-
-<!-- TODO: ����������� � �������������� ����� -->
+@if (currentChecklist != null)
+{
+    <div class="checklist-details">
+        <div class="detail-section">
+            <h4>Общая информация</h4>
+            <div class="detail-grid">
+                <div><strong>Объект:</strong> @currentChecklist.Installation?.System?.Facility?.Name</div>
+                <div><strong>Оборудование:</strong> @currentChecklist.Installation?.EquipmentType?.TypeName</div>
+                <div><strong>Дата начала:</strong> @currentChecklist.StartDate?.ToString("dd/MM/yyyy HH:mm")</div>
+                <div><strong>Статус:</strong> <span class="status @currentChecklist.Status.ToLower()">@currentChecklist.Status</span></div>
+            </div>
+        </div>
+        
+        <div class="detail-section">
+            <h4>Ответы</h4>
+            @if (currentChecklist.Responses?.Any() == true)
+            {
+                @foreach (var response in currentChecklist.Responses)
+                {
+                    <div class="response-item">
+                        <strong>@response.ChecklistTemplateItem?.QuestionText</strong>
+                        <div class="response-value">
+                            @if (response.BooleanResponse.HasValue)
+                            {
+                                <text>@(response.BooleanResponse.Value ? "Да" : "Нет")</text>
+                            }
+                            else if (!string.IsNullOrEmpty(response.TextResponse))
+                            {
+                                <text>@response.TextResponse</text>
+                            }
+                            else if (response.NumericResponse.HasValue)
+                            {
+                                <text>@response.NumericResponse.Value</text>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>Нет данных ответов</p>
+            }
+        </div>
+        
+        <div class="actions">
+            <button @onclick="NavigateBack" class="btn btn-secondary">← Назад</button>
+            <button @onclick="EditChecklist" class="btn btn-primary">Внести изменения</button>
+        </div>
+    </div>
+}
+else
+{
+    <p>Контрольный лист не найден</p>
+    <button @onclick="NavigateBack" class="btn btn-secondary">← Назад</button>
+}
 
 @code {
     [Parameter] public int ChecklistId { get; set; }
-    [Inject] private NavigationManager NavigationManager { get; set; }
+    
+    private Checklist? currentChecklist;
+    
+    protected override void OnParametersSet()
+    {
+        LoadChecklistData();
+    }
+    
+    private void LoadChecklistData()
+    {
+        // TODO: Загрузка данных из базы
+        currentChecklist = new Checklist
+        {
+            Id = ChecklistId,
+            StartDate = DateTime.Now.AddDays(-2),
+            Status = "completed",
+            Installation = new Installation
+            {
+                EquipmentType = new EquipmentType { TypeName = "Генератор" },
+                System = new FacilitySystem 
+                { 
+                    Facility = new Facility { Name = "Завод №1" }
+                }
+            },
+            Responses = new List<ChecklistResponse>
+            {
+                new ChecklistResponse 
+                { 
+                    ChecklistTemplateItem = new ChecklistTemplateItem { QuestionText = "Проверка давления" },
+                    BooleanResponse = true
+                },
+                new ChecklistResponse
+                {
+                    ChecklistTemplateItem = new ChecklistTemplateItem { QuestionText = "Комментарии" },
+                    TextResponse = "Всё в норме"
+                }
+            }
+        };
+    }
+    
+    private void NavigateBack()
+    {
+        NavigationManager.NavigateTo("/sheets-management");
+    }
+    
+    private void EditChecklist()
+    {
+        // TODO: Реализовать редактирование
+        Console.WriteLine("Editing checklist...");
+    }
 }
+
+<style>
+    .detail-section {
+        margin-bottom: 2rem;
+        padding: 1rem;
+        border: 1px solid #eee;
+        border-radius: 4px;
+    }
+    
+    .detail-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+    
+    .response-item {
+        margin-bottom: 1rem;
+        padding: 0.5rem;
+        border-left: 3px solid #007bff;
+    }
+    
+    .response-value {
+        margin-top: 0.25rem;
+        color: #333;
+    }
+    
+    .actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    
+    .status {
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+    }
+    
+    .status.draft { background-color: #fff3cd; color: #856404; }
+    .status.completed { background-color: #d1ecf1; color: #0c5460; }
+</style>
