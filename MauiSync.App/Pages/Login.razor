@@ -1,31 +1,79 @@
-@using MauiSync.Core.Models
 @page "/login"
+@inject NavigationManager NavigationManager
+@using Microsoft.AspNetCore.Components.Web 
 <!-- 0  -->
-
 
 <h3>Вход в систему</h3>
 
 <div class="auth-container">
     <div class="form-group">
-        <label>Логин:</label>
-        <input @bind="username" class="form-control" />
+        <label for="username">Логин:</label>
+        <input id="username" @bind="username" @oninput="ClearError" class="form-control" />
     </div>
     <div class="form-group">
-        <label>Пароль:</label>
-        <input type="password" @bind="password" class="form-control" />
+        <label for="password">Пароль:</label>
+        <input id="password" type="password" @bind="password" @oninput="ClearError" 
+               @onkeypress="HandleKeyPress" class="form-control" />
     </div>
+    
+    <!-- Отладочная информация -->
+    <div style="background: #f0f0f0; padding: 10px; margin: 10px 0;">
+        <small>Отладка: username='@username', password='@password'</small>
+    </div>
+    
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger">@errorMessage</div>
+    }
+    
     <button @onclick="PerformLogin" class="btn btn-primary">Войти</button>
 </div>
 
 @code {
     private string username = "";
     private string password = "";
+    private string errorMessage = "";
     
-    private void PerformLogin()
+    private void ClearError()
     {
-        // После успешного входа:
-        NavigationManager.NavigateTo("/main-menu");
+        errorMessage = "";
+        StateHasChanged();
     }
-
-    [Inject] private NavigationManager NavigationManager { get; set; }
+    
+    private void HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            PerformLogin();
+        }
+    }
+    
+    private async Task PerformLogin()
+    {
+        Console.WriteLine($"Login attempt: {username}");
+        
+        // Простая проверка
+        if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+        {
+            errorMessage = "Введите логин и пароль";
+            StateHasChanged();
+            return;
+        }
+        
+        if ((username == "admin" && password == "admin") || 
+            (username == "engineer" && password == "123"))
+        {
+            errorMessage = "";
+            Console.WriteLine("Login successful, navigating to /main-menu");
+            
+            // Небольшая задержка для визуального feedback
+            await Task.Delay(100);
+            NavigationManager.NavigateTo("/main-menu", forceLoad: true);
+        }
+        else
+        {
+            errorMessage = "Неверный логин или пароль";
+            StateHasChanged();
+        }
+    }
 }
